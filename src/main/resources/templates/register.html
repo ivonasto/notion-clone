@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create a new account</title>
+
+    <!-- CSRF header name and value to be used by froms on this page to talk to the server -->
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+</head>
+<body>
+<form id="registerForm">
+    <H1> Create a new account </H1>
+    <div>
+        <input type="email" id="email" name="email" placeholder="email">
+        <div class="error" style="margin-bottom: 30px" id="email-err"></div>
+    </div>
+    <button type="submit">
+        Submit
+    </button>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $("#registerForm").submit(function (eventObject) {
+            const email = {email: $("#email").val()};
+            startRegistration(email);
+            eventObject.preventDefault();
+        })
+    })
+
+    //TODO check whats in the jqXHR
+    function startRegistration(formData) {
+        $.ajax({
+            url: "/notionclone/webauth/register/start",
+            type: "POST",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            dataType: "json",
+            beforeSend: function (xhr) {
+                const token = $("meta[name='_csrf']").attr("content")
+                const header = $("meta[name='_csrf_header']").attr("content")
+                xhr.setRequestHeader(header, token)
+            },
+            success: function(data){
+                createCredential(data)
+            },
+            error: function(xhr){
+                let errors = xhr.responseJSON;
+                if (errors.email) $("#email-err").text(errors.email);
+            }
+
+        });
+
+
+    }
+    function createCredential(options){
+
+    }
+</script>
+
+</body>
+</html>
