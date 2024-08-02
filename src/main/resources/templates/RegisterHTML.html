@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Create a new account</title>
+    <script src="/js/base64/base64.js"></script>
+    <script src="/js/jquery/jquery-3.6.0.min.js"></script>
 
     <!-- CSRF header name and value to be used by froms on this page to talk to the server -->
     <meta th:name="_csrf" th:content="${_csrf.token}"/>
@@ -14,7 +16,10 @@
     <H1> Create a new account </H1>
     <div>
         <input type="email" id="email" name="email" placeholder="email">
-        <div class="error" style="margin-bottom: 30px" id="email-err"></div>
+    </div>
+
+    <div class="error" style="margin-bottom: 30px" id="email-err"></div>
+        <input type="text" id="username" name="username" placeholder="username">
     </div>
     <button type="submit">
         Submit
@@ -24,8 +29,9 @@
 <script>
     $(document).ready(function () {
         $("#registerForm").submit(function (eventObject) {
-            const email = {email: $("#email").val()};
-            startRegistration(email);
+            const registerForm = {email: $("#email").val(),
+            username: $("#username").val()};
+            startRegistration(registerForm);
             eventObject.preventDefault();
         })
     })
@@ -55,7 +61,28 @@
 
 
     }
-    function createCredential(options){
+   /* function createCredential(options){
+        const publicKey={
+            attestation: ,
+            challenge:,
+            pubKeyCredParams:,
+            rp:{id:,
+            name:},
+            user:{
+                displayName:,
+                id:,
+                name:
+            },
+
+
+        }
+        navigator.credentials.create({'publicKey' : publicKey})
+            .then((publicKeyCredential) => {
+            finishRegistration(options,publicKeyCredential)})
+
+    }*/
+
+    function finishRegistration(options,publicKeyCredentialInfo){
 
     }
 </script>
