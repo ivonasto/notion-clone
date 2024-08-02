@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 /src/main/resources/application.properties
 keystore.p12
+notes.txt
+docker-compose.yml
 
 ### STS ###
 .apt_generated
