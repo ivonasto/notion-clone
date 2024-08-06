@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
 
     @Override
     public UserAccount createUser(String username, String email) {
@@ -43,6 +45,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).map(UserServiceImpl::toUserAccount);
 
     }
+
+    @Override
+    public Optional<UserAccount> findById(UUID id) {
+        return userRepository.findById(id).map(UserServiceImpl::toUserAccount);
+    }
+
+
 
     private static UserAccount toUserAccount(UserAccountEntity accountEntity) {
 
