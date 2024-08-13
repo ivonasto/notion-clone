@@ -51,6 +51,21 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).map(UserServiceImpl::toUserAccount);
     }
 
+    @Override
+    public void addCredential(FidoCredential fidoCredential) {
+        FidoCredentialEntity fidoCredentialEntity = new FidoCredentialEntity();
+        fidoCredentialEntity.setUserId(fidoCredential.userid());
+        fidoCredentialEntity.setType(fidoCredential.keyType());
+        fidoCredentialEntity.setPublicKeyCose(fidoCredential.publicKey());
+        fidoCredentialEntity.setId(fidoCredential.keyId());
+
+        UserAccountEntity account =
+                this.userRepository
+                        .findById(fidoCredential.userid())
+                        .orElseThrow(
+                                () -> new RuntimeException("can't add a credential to a user that does not exist"));
+        account.getCredentials().add(fidoCredentialEntity);
+    }
 
 
     private static UserAccount toUserAccount(UserAccountEntity accountEntity) {

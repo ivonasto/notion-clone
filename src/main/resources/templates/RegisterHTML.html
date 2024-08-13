@@ -19,8 +19,7 @@
     </div>
 
     <div class="error" style="margin-bottom: 30px" id="email-err"></div>
-        <input type="text" id="username" name="username" placeholder="username">
-    </div>
+    <input type="text" id="username" name="username" placeholder="username">
     <button type="submit">
         Submit
     </button>
@@ -29,8 +28,11 @@
 <script>
     $(document).ready(function () {
         $("#registerForm").submit(function (eventObject) {
-            const registerForm = {email: $("#email").val(),
-            username: $("#username").val()};
+            const registerForm = {
+                email: $("#email").val(),
+                username: $("#username").val()
+            };
+            console.log(registerForm);
             startRegistration(registerForm);
             eventObject.preventDefault();
         })
@@ -49,41 +51,85 @@
                 const header = $("meta[name='_csrf_header']").attr("content")
                 xhr.setRequestHeader(header, token)
             },
-            success: function(data){
+            success: function (data) {
                 createCredential(data)
             },
-            error: function(xhr){
-                let errors = xhr.responseJSON;
-                if (errors.email) $("#email-err").text(errors.email);
+            error: function (xhr) {
+                let errors;
+                try {
+                    errors = xhr.responseJSON || JSON.parse(xhr.responseText);
+                    $("#email-err").text(errors.email);
+                    $("#username-err").text(errors.username);
+                } catch (e) {
+                    console.error("Failed to parse response:", e);
+                    console.error("Data:",this.data);
+                }
             }
 
         });
 
 
     }
-   /* function createCredential(options){
-        const publicKey={
-            attestation: ,
-            challenge:,
-            pubKeyCredParams:,
-            rp:{id:,
-            name:},
-            user:{
-                displayName:,
-                id:,
-                name:
+
+    function createCredential(options) {
+        const publicKey = {
+            attestation: options.attestation,
+            challenge: toByteArray(options.challenge),
+            pubKeyCredParams: options.pubKeyCredParams,
+            rp: {
+                id: options.rp.id,
+                name: options.rp.name
+            },
+            user: {
+                displayName: options.user.displayName,
+                id: toByteArray(options.user.id),
+                name: options.user.name
             },
 
 
         }
-        navigator.credentials.create({'publicKey' : publicKey})
+        navigator.credentials.create({'publicKey': publicKey})
             .then((publicKeyCredential) => {
-            finishRegistration(options,publicKeyCredential)})
+                finishRegistration(options, publicKeyCredential)
+            })
+            .catch((error) => {
+                console.log('FAIL', error)
+            })
 
-    }*/
+    }
 
-    function finishRegistration(options,publicKeyCredentialInfo){
+    function finishRegistration(options, newCredentialInfo) {
+        const finishRequest = {
+            credential: {
+                id: newCredentialInfo.id,
+                rawId: fromByteArray(newCredentialInfo.rawId),
+                type: newCredentialInfo.type,
+                response: {
+                    clientDataJSON: fromByteArray(newCredentialInfo.response.clientDataJSON),
+                    attestationObject: fromByteArray(newCredentialInfo.response.attestationObject)
+                },
+                clientExtensionResults: {}
+            }
 
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: "notionclone/webauth/register/finish",
+            data: JSON.stringify(finishRequest),
+            dataType: "json",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+                // spring security has CSRF protection turned on, if we don't
+                // set the correct CSRF header and value spring security will
+                // block the request from getting to the Spring MVC controller
+                // that will process this request.
+                const token = $("meta[name='_csrf']").attr("content")
+                const header = $("meta[name='_csrf_header']").attr("content")
+                xhr.setRequestHeader(header, token)
+            }
+        })
     }
 </script>
 

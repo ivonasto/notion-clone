@@ -24,7 +24,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests().requestMatchers(
                         mvc.pattern("/"),
                         mvc.pattern("/register"),
-                        mvc.pattern("/notionclone/webauth/registration/start"))
+                        mvc.pattern("/notionclone/webauth/register/start"),
+                        mvc.pattern("/notionclone/webauth/register/finish"),
+                        mvc.pattern("/error"))
                 .permitAll()
                 .requestMatchers("/images/**", "/fonts/**", "/css/**", "/js/**")
                 .permitAll()

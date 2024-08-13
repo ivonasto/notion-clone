@@ -7,6 +7,7 @@ public interface UserService {
     UserAccount createUser(String username, String email);
     Optional<UserAccount> findByEmail(String email);
     Optional<UserAccount> findById(UUID id);
+    void addCredential(FidoCredential fidoCredential);
 
 
 
