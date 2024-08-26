@@ -13,4 +13,12 @@ create table user_credentials
     type       text NOT NULL
 );
 
-
+CREATE TABLE webauthn_login_flow
+(
+    id               UUID PRIMARY KEY,
+    start_request    TEXT,
+    start_response   TEXT,
+    assertion_request TEXT,
+    assertion_result  TEXT,
+    successful_login BOOLEAN
+);
