@@ -42,7 +42,6 @@ public class RegistrationController {
         }
 
         try {
-            System.out.println(formData);
             PublicKeyCredentialCreationOptions options = registrationService.startRegistration(formData);
             session.setAttribute(START_REG_REQUEST, options);
             ObjectMapper objectMapper = new ObjectMapper();
